@@ -1,9 +1,9 @@
-import { Homecontent } from "./_components/content";
+import { HomeContent } from "@/components/sections/content";
 
 export default function Home() {
   return (
     <>
-      <Homecontent />
+      <HomeContent />
     </>
   );
 }
