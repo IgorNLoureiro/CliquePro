@@ -8,7 +8,6 @@ export function Navbar() {
                     <Link href="/" className="text-xl font-bold">
                         CliquePro
                     </Link>
-                    
                 </div>
             </div>
         </nav>
