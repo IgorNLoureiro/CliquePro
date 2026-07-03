@@ -14,7 +14,6 @@ Gere retratos profissionais a partir de fotos comuns usando IA. Faça upload de 
 - **Frontend:** Next.js, React, TypeScript, Tailwind CSS
 - **Automação:** n8n (webhook + edição de imagem via OpenAI + upload Cloudinary)
 - **Armazenamento de imagens:** Cloudinary
-- **Deploy:** Vercel
 
 ## Rodando localmente
 
