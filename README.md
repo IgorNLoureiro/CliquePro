@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CliquePro
 
-## Getting Started
+Gere retratos profissionais a partir de fotos comuns usando IA. Faça upload de uma selfie e receba uma versão com roupa e fundo profissionais, mantendo seus traços faciais intactos.
 
-First, run the development server:
+## Como funciona
+
+1. O usuário envia uma foto pelo formulário
+2. A imagem é processada por um workflow no n8n, que usa a API de edição de imagem da OpenAI para trocar roupa e fundo
+3. A imagem gerada é armazenada no Cloudinary
+4. O resultado é exibido lado a lado com a foto original, com opção de download
+
+## Stack
+
+- **Frontend:** Next.js, React, TypeScript, Tailwind CSS
+- **Automação:** n8n (webhook + edição de imagem via OpenAI + upload Cloudinary)
+- **Armazenamento de imagens:** Cloudinary
+- **Deploy:** Vercel
+
+## Rodando localmente
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Variáveis de ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Crie um arquivo `.env` na raiz do projeto:
 
-## Learn More
+```
+N8N_WEBHOOK_URL=
+```
 
-To learn more about Next.js, take a look at the following resources:
+> O workflow do n8n precisa estar rodando e acessível nessa URL para o upload e geração de imagem funcionarem.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estrutura principal
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/
+  api/generate-portrait/route.ts   # recebe a foto, chama o n8n, retorna a URL da imagem gerada
+  results/page.tsx                 # tela de resultado com foto original x gerada e botão de download
+components/
+  sections/ImageUploader.tsx       # formulário de upload
+```
 
-## Deploy on Vercel
+## Roadmap
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] Seleção de estilo de retrato (corporativo, casual, criativo)
+- [ ] Histórico de gerações por usuário
+- [ ] Otimização de tempo de geração
