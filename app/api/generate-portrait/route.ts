@@ -25,9 +25,17 @@ export async function POST(req: Request) {
         }
 
         const result = await n8nResponse.json()
+        console.log('RESPOSTA DO N8N:', JSON.stringify(result))
+
+        // o n8n devolve um array com o objeto de resposta da Cloudinary
+        const secureUrl = result.imageUrl
+        
+        if (!secureUrl) {
+            throw new Error('URL da imagem não encontrada na resposta do n8n')
+        }
 
         return NextResponse.json({
-            imageUrl: result.imageUrl,
+            imageUrl: secureUrl,
         })
     } catch (error) {
         console.error(error)

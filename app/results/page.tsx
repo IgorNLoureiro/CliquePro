@@ -11,6 +11,12 @@ export default function ResultadoPage() {
         return sessionStorage.getItem('originalPhoto')
     })
 
+    const handleDownload = () => {
+    if (!generatedPhoto) return
+    const downloadUrl = generatedPhoto.replace('/upload/', '/upload/fl_attachment/')
+    window.location.href = downloadUrl
+}
+
     const [generatedPhoto] = useState<string | null>(() => {
         if (typeof window === 'undefined') return null
         return sessionStorage.getItem('generatedPhoto')
@@ -58,6 +64,14 @@ export default function ResultadoPage() {
                     </div>
                 </div>
             </div>
+            <div className="flex justify-center">
+    <button
+        onClick={handleDownload}
+        className="mt-8 bg-black text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
+    >
+        Baixar foto
+    </button>
+</div>
         </main>
     )
 }
