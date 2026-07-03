@@ -1,12 +1,16 @@
 'use client'
 
 import { useState, useRef, DragEvent, ChangeEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { Upload } from 'lucide-react'
 
 export function PhotoUpload() {
     const [isDragging, setIsDragging] = useState(false)
     const [file, setFile] = useState<File | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
+    const router = useRouter()
 
     const handleDrag = (e: DragEvent, active: boolean) => {
         e.preventDefault()
@@ -25,6 +29,48 @@ export function PhotoUpload() {
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0]
         if (selectedFile) setFile(selectedFile)
+    }
+
+    const fileToBase64 = (f: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = () => resolve(reader.result as string)
+            reader.onerror = reject
+            reader.readAsDataURL(f)
+        })
+    }
+
+    const handleGenerate = async () => {
+        if (!file) return
+        setLoading(true)
+        setError(null)
+
+        try {
+            // guarda a foto original como base64 pra mostrar na tela de resultado
+            const originalBase64 = await fileToBase64(file)
+
+            const formData = new FormData()
+            formData.append('photo', file)
+
+            const res = await fetch('/api/generate-portrait', {
+                method: 'POST',
+                body: formData,
+            })
+
+            if (!res.ok) throw new Error('Erro ao gerar retrato')
+
+            const data = await res.json()
+
+            sessionStorage.setItem('originalPhoto', originalBase64)
+            sessionStorage.setItem('generatedPhoto', data.imageUrl)
+
+            router.push('/results')
+        } catch (err) {
+            console.error(err)
+            setError('Não foi possível gerar o retrato. Tenta de novo.')
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -46,7 +92,7 @@ export function PhotoUpload() {
                 <input
                     ref={inputRef}
                     type="file"
-                    accept="image/png, image/jpeg, image/webp"
+                    accept="image/png"
                     onChange={handleChange}
                     className="hidden"
                 />
@@ -64,12 +110,26 @@ export function PhotoUpload() {
                                 Arraste sua foto aqui ou clique para selecionar
                             </p>
                             <p className="text-sm text-muted-foreground">
-                                PNG, JPG ou WEBP
+                                Apenas PNG
                             </p>
                         </>
                     )}
                 </div>
             </div>
+
+            {file && (
+                <button
+                    onClick={handleGenerate}
+                    disabled={loading}
+                    className="mt-6 bg-black text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50 w-full"
+                >
+                    {loading ? 'Gerando retrato...' : 'Gerar retrato profissional'}
+                </button>
+            )}
+
+            {error && (
+                <p className="mt-4 text-sm text-red-500">{error}</p>
+            )}
         </div>
     )
 }
